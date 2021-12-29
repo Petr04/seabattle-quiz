@@ -1,0 +1,68 @@
+<template>
+  <table>
+    <tr v-for="(row, i) in field" :key="i">
+      <td v-for="(cell, j) in row" :key="j">
+        <Cell
+          :status="cell.status" :i="i" :j="j"
+          @click.native="attack(i, j)"
+        />
+      </td>
+    </tr>
+  </table>
+</template>
+
+<script>
+import Cell from "./Cell";
+
+export default {
+  props: ['width', 'height'],
+  components: { Cell },
+  data: () => ({
+    field: [],
+    won: false,
+  }),
+  methods: {
+    attack(x, y) {
+      if (this.field[x][y].clicked || this.won) return;
+      this.field[x][y].clicked = true;
+
+      const [result, killed] = window.attack(x, y);
+      this.field[x][y].status = result;
+
+      if (result == 'kill' || result == 'win') {
+        for (let [x, y] of killed) {
+          this.field[x][y].status = 'kill';
+        }
+      }
+
+      if (result == 'win')
+        this.won = true;
+    }
+  },
+  watch: {
+    won(newValue) {
+      if (newValue == true) {
+        this.$emit('win');
+      }
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      let isSuccessful = false;
+      while (!isSuccessful) {
+        isSuccessful = window.newGame(this.width, this.height);
+      }
+    });
+
+    for (let i = 0; i < this.width; i++) {
+      this.field.push([]);
+      for (let j = 0; j < this.height; j++) {
+        this.field[i].push({
+          status: 'normal',
+          clicked: false,
+        });
+      }
+    }
+  },
+};
+</script>

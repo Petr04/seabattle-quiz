@@ -1,28 +1,51 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <canvas id="confetti"></canvas>
+    <Field
+      :width="8" :height="8"
+      @win="confetti.addConfetti(confettiParams)"
+    />
   </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
-
 <style>
+body {
+  margin: 0;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+#confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 100%;
+  right: 100%;
 }
 </style>
+
+<script>
+import Field from "./components/Field";
+import JSConfetti from 'js-confetti';
+
+export default {
+  name: "App",
+  components: {
+    Field,
+  },
+  data: () => ({
+    confetti: new JSConfetti(),
+    confettiParams: {
+
+    },
+  }),
+};
+</script>
