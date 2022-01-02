@@ -47,7 +47,7 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
+    document.addEventListener('brythonexecuted', () => {
       let isSuccessful = false;
       while (!isSuccessful) {
         isSuccessful = window.newGame(this.width, this.height);

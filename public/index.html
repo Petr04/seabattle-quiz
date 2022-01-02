@@ -9,203 +9,205 @@
 
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-    </script>
-  <script type="text/python">
+<script type="text/python">
 
-    from browser import window
+from browser import window, document
 
-    from random import choice
-    from math import inf
-
-
-    class Result():
-        MISS    = "miss"
-        DAMAGE  = "damage"
-        KILL    = "kill"
-        WIN     = "win"
+from random import choice
+from math import inf
 
 
-    def near(cell, size, diagonals, base):
-        ret = set()
-        delta = (-1, 0, 1)
-        for i in delta:
-            for j in delta:
-                if not((not diagonals) and (not (0 in (i, j)))):
-                    ret.add((cell[0]+i, cell[1]+j))
+class Result():
+    MISS    = "miss"
+    DAMAGE  = "damage"
+    KILL    = "kill"
+    WIN     = "win"
 
-        if not base:
-            ret.remove(cell)
 
-        remove = set()
-        for coord in ret:
-            for i in range(len(coord)):
-                if not (0 <= coord[i] <= size[i]-1):
-                    remove.add(coord)
+def near(cell, size, diagonals, base):
+    ret = set()
+    delta = (-1, 0, 1)
+    for i in delta:
+        for j in delta:
+            if not((not diagonals) and (not (0 in (i, j)))):
+                ret.add((cell[0]+i, cell[1]+j))
 
-        ret -= remove
+    if not base:
+        ret.remove(cell)
+
+    remove = set()
+    for coord in ret:
+        for i in range(len(coord)):
+            if not (0 <= coord[i] <= size[i]-1):
+                remove.add(coord)
+
+    ret -= remove
+
+    return ret
+
+def near_group(cells, size, diagonals, base):
+    ret = set()
+    for cell in cells:
+        ret |= near(cell, size, diagonals=diagonals, base=base)
+
+    if not base:
+        ret -= set(cells)
+
+    return ret
+
+def invert(field, size):
+    ret = set()
+
+    for i in range(size[0]):
+        for j in range(size[1]):
+            if not ( (i, j) in field ):
+                ret.add((i, j))
+
+    return ret
+
+def split2ships(cells):
+    ships = set()
+
+    for i in cells:
+        new = {i}
+
+        add = True
+        while add:
+            add = False
+
+            for j in cells - new:
+
+                intersection = near_group({j}, (inf, inf), base=False, diagonals=False) & new
+
+                if len(intersection) != 0:
+
+                    new.add(j)
+                    add = True
+
+        ships.add(frozenset(new))
+
+    return ships
+
+
+class Player:
+    def __init__(self, size):
+        self.field = set()
+
+        self.killed = set()
+        self.damaged = set()
+        self.miss = set()
+
+        self.size = size
+
+        self.all = set()
+        for i in range(self.size[0]):
+            for j in range(self.size[1]):
+                self.all.add((i, j))
+
+    def __str__(self):
+        ret = ''
+        for i in range(self.size[0]):
+            for j in range(self.size[1]):
+                if (i, j) in self.field:
+                    ret += 'X'
+                else:
+                    ret += ' '
+
+            ret += '\n'
 
         return ret
 
-    def near_group(cells, size, diagonals, base):
-        ret = set()
-        for cell in cells:
-            ret |= near(cell, size, diagonals=diagonals, base=base)
-
-        if not base:
-            ret -= set(cells)
-
-        return ret
-
-    def invert(field, size):
-        ret = set()
-
-        for i in range(size[0]):
-            for j in range(size[1]):
-                if not ( (i, j) in field ):
-                    ret.add((i, j))
-
-        return ret
-
-    def split2ships(cells):
-        ships = set()
-
-        for i in cells:
-            new = {i}
-
-            add = True
-            while add:
-                add = False
-
-                for j in cells - new:
-
-                    intersection = near_group({j}, (inf, inf), base=False, diagonals=False) & new
-
-                    if len(intersection) != 0:
-
-                        new.add(j)
-                        add = True
-
-            ships.add(frozenset(new))
-
-        return ships
-
-
-    class Player:
-        def __init__(self, size):
+    def generate(self, ship_count=4):
+        i_count = 0
+        while True:
+            free_place = True
+            bad = set()
             self.field = set()
 
-            self.killed = set()
-            self.damaged = set()
-            self.miss = set()
+            for ship_type in range(ship_count, 0, -1):
+                ship_instance = 0
+                while ship_instance < ship_count - ship_type + 1:
 
-            self.size = size
+                    first_set = invert(near_group(self.field, self.size,
+                        base=True, diagonals=True) | bad, self.size)
+                    if not first_set:
+                        free_place = False
+                        break
 
-            self.all = set()
-            for i in range(self.size[0]):
-                for j in range(self.size[1]):
-                    self.all.add((i, j))
+                    new = {choice(list(first_set))}
 
-        def __str__(self):
-            ret = ''
-            for i in range(self.size[0]):
-                for j in range(self.size[1]):
-                    if (i, j) in self.field:
-                        ret += 'X'
-                    else:
-                        ret += ' '
-
-                ret += '\n'
-
-            return ret
-
-        def generate(self, ship_count=4):
-            i_count = 0
-            while True:
-                free_place = True
-                bad = set()
-                self.field = set()
-
-                for ship_type in range(ship_count, 0, -1):
-                    ship_instance = 0
-                    while ship_instance < ship_count - ship_type + 1:
-
-                        first_set = invert(near_group(self.field, self.size,
-                            base=True, diagonals=True) | bad, self.size)
-                        if not first_set:
-                            free_place = False
+                    for _ in range(ship_type-1):
+                        cells = near_group(new, self.size, base=False, diagonals=False) - \
+                            (bad | near_group(self.field, self.size, base=True, diagonals=True))
+                        if not cells:
+                            ship_instance -= 1
+                            bad |= new
+                            new.clear()
                             break
 
-                        new = {choice(list(first_set))}
+                        new.add(choice(list(cells)))
 
-                        for _ in range(ship_type-1):
-                            cells = near_group(new, self.size, base=False, diagonals=False) - \
-                                (bad | near_group(self.field, self.size, base=True, diagonals=True))
-                            if not cells:
-                                ship_instance -= 1
-                                bad |= new
-                                new.clear()
-                                break
+                    self.field |= new
+                    ship_instance += 1
 
-                            new.add(choice(list(cells)))
+                if not free_place:
+                  break
 
-                        self.field |= new
-                        ship_instance += 1
+            if free_place:
+                return True
+            elif i_count >= 20:
+                return False
+            else:
+                i_count += 1
 
-                    if not free_place:
-                      break
+    def attack(self, enemy, cell):
+        x, y = cell
 
-                if free_place:
-                    return True
-                elif i_count >= 20:
-                    return False
-                else:
-                    i_count += 1
+        if not (x, y) in enemy.field:
+            self.miss.add((x, y))
+            return Result.MISS
 
-        def attack(self, enemy, cell):
-            x, y = cell
+        self.damaged.add((x, y))
+        damaged_ships = split2ships(self.damaged)
 
-            if not (x, y) in enemy.field:
-                self.miss.add((x, y))
-                return Result.MISS
+        for ship in damaged_ships:
+            if len(near_group(
+                ship,
+                self.size,
+                diagonals=False,
+                base=False) & enemy.field) == 0:
 
-            self.damaged.add((x, y))
-            damaged_ships = split2ships(self.damaged)
+                self.damaged -= ship
+                self.killed |= ship
 
-            for ship in damaged_ships:
-                if len(near_group(
-                    ship,
-                    self.size,
-                    diagonals=False,
-                    base=False) & enemy.field) == 0:
+                if self.killed == enemy.field:
+                    return Result.WIN
 
-                    self.damaged -= ship
-                    self.killed |= ship
+                return Result.KILL
 
-                    if self.killed == enemy.field:
-                        return Result.WIN
-
-                    return Result.KILL
-
-            return Result.DAMAGE
+        return Result.DAMAGE
 
 
-    def attack(x, y):
-        result = me.attack(computer, (x, y))
-        return [result, list(me.killed)]
+def attack(x, y):
+    result = me.attack(computer, (x, y))
+    return [result, list(me.killed)]
 
-    def new_game(x, y):
-        global computer, me
-        computer = Player((x, y))
-        isSuccessful = computer.generate()
+def new_game(x, y):
+    global computer, me
+    computer = Player((x, y))
+    isSuccessful = computer.generate()
 
-        me = Player((x, y))
+    me = Player((x, y))
 
-        return isSuccessful
+    return isSuccessful
 
-    window.attack = attack
-    window.newGame = new_game
+window.attack = attack
+window.newGame = new_game
 
-  </script>
+event = window.Event.new('brythonexecuted')
+document.dispatchEvent(event)
+
+</script>
   </head>
   <body onload="brython()">
     <noscript>
