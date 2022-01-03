@@ -11,11 +11,21 @@
   </table>
 </template>
 
+<style scoped>
+table {
+  border-collapse: collapse;
+}
+td {
+  margin: 0;
+  padding: 0;
+}
+</style>
+
 <script>
-import Cell from "./Cell";
+import Cell from "@/components/Cell";
 
 export default {
-  props: ['width', 'height'],
+  props: ['width', 'height', 'blockInput'],
   components: { Cell },
   data: () => ({
     field: [],
@@ -23,11 +33,15 @@ export default {
   }),
   methods: {
     attack(x, y) {
-      if (this.field[x][y].clicked || this.won) return;
+      if (this.field[x][y].clicked || this.won || this.blockInput) return;
       this.field[x][y].clicked = true;
 
       const [result, killed] = window.attack(x, y);
       this.field[x][y].status = result;
+
+      if (result != 'miss') {
+        this.$emit('hit');
+      }
 
       if (result == 'kill' || result == 'win') {
         for (let [x, y] of killed) {

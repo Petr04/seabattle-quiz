@@ -11,6 +11,7 @@
   height: var(--size);
   border-radius: 3px;
   padding: 4px;
+  margin: var(--spacing);
   font-size: 13px;
   color: #0003;
   user-select: none;
@@ -22,19 +23,19 @@
 }
 
 .cell.normal {
-  background: #ddd;
+  background: var(--grey);
 }
 
 .cell.miss {
-  background: #35b0fd;
+  background: var(--blue);
 }
 
 .cell.damage {
-  background: #fd9935;
+  background: var(--orange);
 }
 
 .cell.kill {
-  background: #fd3c35;
+  background: var(--red);
 }
 </style>
 
