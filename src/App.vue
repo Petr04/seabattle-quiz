@@ -7,6 +7,7 @@
         :blockInput="!isAnswered"
         @win="confetti.addConfetti(confettiParams)"
         @hit="newQuestion"
+        @bomb="newQuestion"
       />
       <transition name="fade">
         <Question

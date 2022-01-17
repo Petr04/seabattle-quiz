@@ -37,6 +37,11 @@
 .cell.kill {
   background: var(--red);
 }
+
+.cell.bomb {
+  background: #444;
+  color: #ccc;
+}
 </style>
 
 <script>

@@ -29,6 +29,7 @@ class Result():
     DAMAGE  = "damage"
     KILL    = "kill"
     WIN     = "win"
+    BOMB    = "bomb"
 
 
 def near(cell, size, diagonals, base):
@@ -99,6 +100,7 @@ def split2ships(cells):
 class Player:
     def __init__(self, size):
         self.field = set()
+        self.bombs = set()
 
         self.killed = set()
         self.damaged = set()
@@ -112,11 +114,13 @@ class Player:
                 self.all.add((i, j))
 
     def __str__(self):
-        ret = ''
+        ret = 'bombs: ' + str(len(self.bombs)) + '\n'
         for i in range(self.size[0]):
             for j in range(self.size[1]):
                 if (i, j) in self.field:
                     ret += 'X'
+                elif (i, j) in self.bombs:
+                    ret += '!'
                 else:
                     ret += ' '
 
@@ -167,8 +171,19 @@ class Player:
             else:
                 i_count += 1
 
+    def generate_bombs(self, bomb_count=3):
+        free_cells = invert(self.field, self.size)
+
+        for i in range(bomb_count):
+            new_bomb = choice(list(free_cells))
+            self.bombs.add(new_bomb)
+            free_cells.remove(new_bomb)
+
     def attack(self, enemy, cell):
         x, y = cell
+
+        if (x, y) in enemy.bombs:
+            return Result.BOMB
 
         if not (x, y) in enemy.field:
             self.miss.add((x, y))
@@ -203,6 +218,7 @@ def new_game(x, y):
     global computer, me
     computer = Player((x, y))
     isSuccessful = computer.generate()
+    computer.generate_bombs()
 
     me = Player((x, y))
 
