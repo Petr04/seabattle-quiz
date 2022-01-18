@@ -29,11 +29,19 @@ export default {
   components: { Cell },
   data: () => ({
     field: [],
+    loaded: false,
     won: false,
   }),
   methods: {
     attack(x, y) {
-      if (this.field[x][y].clicked || this.won || this.blockInput) return;
+      if (
+        this.field[x][y].clicked
+        || this.won
+        || this.blockInput
+        || !this.loaded
+      )
+        return;
+
       this.field[x][y].clicked = true;
 
       const [result, killed] = window.attack(x, y);
@@ -70,6 +78,7 @@ export default {
       while (!isSuccessful) {
         isSuccessful = window.newGame(this.width, this.height);
       }
+      this.loaded = true;
     });
 
     for (let i = 0; i < this.width; i++) {
