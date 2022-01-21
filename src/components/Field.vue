@@ -1,14 +1,16 @@
 <template>
-  <table>
-    <tr v-for="(row, i) in field" :key="i">
-      <td v-for="(cell, j) in row" :key="j">
-        <Cell
-          :status="cell.status" :i="i" :j="j"
-          @click.native="attack(i, j)"
-        />
-      </td>
-    </tr>
-  </table>
+  <div>
+    <table>
+      <tr v-for="(row, i) in field" :key="i">
+        <td v-for="(cell, j) in row" :key="j">
+          <Cell
+            :status="cell.status" :i="i" :j="j"
+            @click.native="attack(i, j)"
+          />
+        </td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <style scoped>
@@ -46,6 +48,10 @@ export default {
 
       const [result, killed] = window.attack(x, y);
       this.field[x][y].status = result;
+
+      if (result == 'miss') {
+        this.$emit('miss');
+      }
 
       if (result == 'bomb') {
         this.$emit('bomb');

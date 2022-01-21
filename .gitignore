@@ -1,4 +1,5 @@
 ignore
+static
 
 .DS_Store
 node_modules

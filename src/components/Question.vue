@@ -1,6 +1,9 @@
 <template>
   <div class="question-container">
-    <p>{{ question.text }}</p>
+    <p
+      v-html="question.text"
+      :class="{ 'long-text': stripHtml(question.text).length > 70 }"
+    ></p>
     <div class="answers">
       <Answer
         v-for="(answer, i) in question.answers"
@@ -21,7 +24,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 15px;
   width: 500px;
   color: #555;
 }
@@ -31,6 +33,12 @@
   text-align: center;
   margin: 20px 0;
   font-size: 30px;
+}
+
+.question-container > p.long-text {
+  font-weight: normal;
+  text-align: start;
+  font-size: 24px;
 }
 
 .answers {
@@ -60,6 +68,11 @@ export default {
         answer.clear();
       }
     },
-  }
+    stripHtml(html) {
+      const tmp = document.createElement("DIV");
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || "";
+    },
+  },
 };
 </script>

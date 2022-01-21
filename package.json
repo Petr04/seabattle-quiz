@@ -10,7 +10,9 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "js-confetti": "^0.10.2",
-    "vue": "^2.6.11"
+    "mdi-vue": "^3.0.12",
+    "vue": "^2.6.11",
+    "vue2-transitions": "^0.3.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

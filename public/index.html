@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- <title><%= htmlWebpackPlugin.options.title %></title> -->
+    <title>Морской бой</title>
 
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
@@ -15,6 +16,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet"> 
 
 <script type="text/python">
 
@@ -230,8 +233,8 @@ def new_game(x, y):
         ship_counts={
             4: 2,
             3: 3,
-            2: 4,
-            1: 5,
+            2: 3,
+            1: 4,
         },
         on_diagonals=True
     )

@@ -1,22 +1,30 @@
 <template>
   <div id="app">
     <canvas id="confetti"></canvas>
+    <Leaderboard ref="leaderboard" />
     <div class="container">
       <Field
         :width="8" :height="8"
         :blockInput="!isAnswered"
+        @miss="showQuestion = false"
         @win="confetti.addConfetti(confettiParams)"
-        @hit="newQuestion"
-        @bomb="newQuestion"
+        @hit="() => {last = 'hit'; newQuestion()}"
+        @bomb="() => {last = 'bomb'; newQuestion()}"
       />
-      <transition name="fade">
-        <Question
-          v-if="questionAppeared"
-          ref="question"
-          :question="question"
-          @answered="onAnswer"
-        />
-      </transition>
+      <!-- <SlideXRightTransition> -->
+        <div
+          v-if="question"
+          v-show="showQuestion"
+          class="question-gif-container"
+        >
+          <Question
+            ref="question"
+            :question="question"
+            @answered="onAnswer"
+          />
+          <Gif v-if="result" ref="gif" :result="result" />
+        </div>
+      <!-- </SlideXRightTransition> -->
     </div>
   </div>
 </template>
@@ -26,8 +34,9 @@
   --red: #fd3c35;
   --orange: #fd9935;
   --blue: #35b0fd;
-  --grey: #ddd;
   --green: #35fd56;
+  --grey: #ddd;
+  --light-grey: #efefef;
 
   --spacing: 2px;
 }
@@ -39,11 +48,17 @@ body {
 #app {
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+input {
+  font-family: "Roboto", sans-serif;
+  transition: color .3s, background .3s, border-bottom .3s;
 }
 
 #confetti {
@@ -56,6 +71,48 @@ body {
 
 .container {
   display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.question-gif-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.container > *, .question-gif-container > * {
+  margin: 15px;
+}
+
+.mdi svg {
+  fill: #000a;
+}
+
+.button {
+  cursor: pointer;
+  transition: .3s;
+}
+
+.button svg {
+  padding: 2px;
+  transition: .3s;
+  border-radius: 100%;
+}
+
+.button .mdi {
+  height: 3;
+}
+
+code {
+  font-family: "Fira Code", sans-serif;
+  background: var(--grey);
+  padding: 0 6px;
+  margin: 3px;
+  border-radius: 3px;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .fade-enter-active {
@@ -70,7 +127,11 @@ body {
 <script>
 import Field from '@/components/Field';
 import Question from '@/components/Question';
+import Gif from '@/components/Gif';
+import Leaderboard from '@/components/Leaderboard';
 import JSConfetti from 'js-confetti';
+import questions from '@/assets/questions';
+// import { SlideXRightTransition } from 'vue2-transitions';
 
 function shuffle(array) {
   let currentIndex = array.length, randomIndex;
@@ -95,45 +156,40 @@ export default {
   components: {
     Field,
     Question,
+    Gif,
+    Leaderboard,
+    // SlideXRightTransition,
   },
   data: () => ({
     confetti: new JSConfetti(),
     confettiParams: {
 
     },
-    questionAppeared: false,
+    showQuestion: false,
     isAnswered: true,
-    question: null,
+    result: null,
+    last: null,
+    question: false,
     questionNumber: 0,
-    questions: shuffle([
-      {
-        text: 'Первый вопрос',
-        answers: [
-          'Первый ответ',
-          'Второй ответ',
-          'Третий ответ',
-          'Четвёртый ответ',
-        ],
-        answer: 1,
-      },
-      {
-        text: 'Второй вопрос',
-        answers: [
-          'Первый ответ',
-          'Второй ответ',
-          'Третий ответ',
-          'Четвёртый ответ',
-        ],
-        answer: 3,
-      }
-    ])
+    questions: shuffle(questions),
   }),
   methods: {
-    onAnswer() {
+    onAnswer(result) {
       this.isAnswered = true;
+      this.result = result;
+
+      if (result == 'correct' && this.last == 'hit') {
+        this.$refs.leaderboard.change(x => x + 1);
+      } else if (result == 'wrong' && this.last == 'bomb') {
+        this.$refs.leaderboard.change(x => x - 1);
+      } else {
+        this.$refs.leaderboard.change(x => x);
+      }
     },
     newQuestion() {
-      if (this.questionAppeared)
+      this.result = null;
+      this.showQuestion = true;
+      if (this.$refs.question)
         this.$refs.question.clear();
 
       this.isAnswered = false;
@@ -145,7 +201,7 @@ export default {
   watch: {
     question(newValue, oldValue) {
       if (oldValue == null) {
-        this.questionAppeared = true;
+        this.showQuestion = true;
       }
     },
   }
