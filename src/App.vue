@@ -77,7 +77,10 @@ input {
 .question-gif-container {
   display: flex;
   flex-direction: column;
+
   width: min-content;
+  width: -moz-min-content;
+  width: -webkit-min-content;
 }
 
 .container > *, .question-gif-container > * {
