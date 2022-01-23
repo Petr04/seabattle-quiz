@@ -1,9 +1,6 @@
 <template>
   <div class="question-container">
-    <p
-      v-html="question.text"
-      :class="{ 'long-text': stripHtml(question.text).length > 70 }"
-    ></p>
+    <p v-html="question.text"></p>
     <div class="answers">
       <Answer
         v-for="(answer, i) in question.answers"
@@ -22,23 +19,16 @@
 .question-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   width: 500px;
   color: #555;
 }
 
 .question-container > p {
-  font-weight: 800;
-  text-align: center;
-  margin: 20px 0;
-  font-size: 30px;
-}
-
-.question-container > p.long-text {
   font-weight: normal;
   text-align: start;
   font-size: 24px;
+  margin: 15px 10px;
 }
 
 .answers {

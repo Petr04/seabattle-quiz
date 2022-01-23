@@ -5,8 +5,8 @@
 <style scoped>
 img {
   display: block;
-  height: 300px;
-  width: auto;
+  max-height: 300px;
+  width: calc(100% - 2 * 15px);
   border-radius: 3px;
 }
 </style>

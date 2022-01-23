@@ -58,7 +58,6 @@ body {
 
 input {
   font-family: "Roboto", sans-serif;
-  transition: color .3s, background .3s, border-bottom .3s;
 }
 
 #confetti {
@@ -78,6 +77,7 @@ input {
 .question-gif-container {
   display: flex;
   flex-direction: column;
+  width: min-content;
 }
 
 .container > *, .question-gif-container > * {
