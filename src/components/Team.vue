@@ -3,7 +3,7 @@
     <input
       type="text"
       ref="input"
-      :value="team.name"
+      placeholder="Новая команда"
       class="input"
       :style="{ width: minWidth + 'px' }"
       contenteditable
@@ -74,7 +74,7 @@
 export default {
   props: ['team', 'active'],
   data: () => ({
-    minWidth: 100,
+    minWidth: 0,
     maxWidth: 400,
   }),
   methods: {
@@ -95,7 +95,14 @@ export default {
     adjustInput() {
       this.$refs.input.style.width = Math.max(
         this.minWidth,
-        Math.min(this.maxWidth, this.getTextWidth(this.$refs.input.value))
+        Math.min(this.maxWidth,
+          Math.max(
+            this.getTextWidth(this.$refs.input.value),
+            this.$refs.input.value
+              ? 0
+              : this.getTextWidth(this.$refs.input.placeholder)
+          )
+        )
       ) + 'px';
     },
   },

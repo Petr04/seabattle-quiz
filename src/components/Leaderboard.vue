@@ -43,7 +43,7 @@ export default {
   components: { Team },
   data: () => ({
     teams: [{
-      name: 'Новая команда',
+      name: '',
       score: 0,
     }],
     active: 0,
@@ -51,7 +51,7 @@ export default {
   methods: {
     addTeam() {
       this.teams.push({
-        name: 'Новая команда',
+        name: '',
         score: 0,
       });
     },
