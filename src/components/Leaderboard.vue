@@ -57,6 +57,8 @@ export default {
     },
     change(f) {
       this.teams[this.active].score = f(this.teams[this.active].score);
+    },
+    next() {
       this.active = (this.active + 1) % this.teams.length;
     },
   },

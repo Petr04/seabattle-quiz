@@ -6,10 +6,11 @@
       <Field
         :width="8" :height="8"
         :blockInput="!isAnswered"
-        @miss="showQuestion = false"
-        @win="confetti.addConfetti(confettiParams)"
-        @hit="() => {last = 'hit'; newQuestion()}"
-        @bomb="() => {last = 'bomb'; newQuestion()}"
+        @miss="() => {showQuestion = false; goNextTeam()}"
+        @win="() => {nextTeam = false; confetti.addConfetti(confettiParams); newQuestion()}"
+        @damage="() => {nextTeam = false; newQuestion()}"
+        @kill="() => {newQuestion()}"
+        @bomb="() => {bomb = true; newQuestion()}"
       />
       <!-- <SlideXRightTransition> -->
         <div
@@ -22,7 +23,7 @@
             :question="question"
             @answered="onAnswer"
           />
-          <Gif v-if="result" ref="gif" :result="result" />
+          <Gif v-if="questionResult" ref="gif" :result="questionResult" />
         </div>
       <!-- </SlideXRightTransition> -->
     </div>
@@ -170,8 +171,9 @@ export default {
     },
     showQuestion: false,
     isAnswered: true,
-    result: null,
-    last: null,
+    questionResult: null,
+    bomb: false,
+    nextTeam: true,
     question: false,
     questionNumber: 0,
     questions: shuffle(questions),
@@ -179,18 +181,22 @@ export default {
   methods: {
     onAnswer(result) {
       this.isAnswered = true;
-      this.result = result;
+      this.questionResult = result;
 
-      if (result == 'correct' && this.last == 'hit') {
+      if (result == 'correct' && !this.bomb) {
         this.$refs.leaderboard.change(x => x + 1);
-      } else if (result == 'wrong' && this.last == 'bomb') {
+      } else if (result == 'wrong' && this.bomb) {
         this.$refs.leaderboard.change(x => x - 1);
-      } else {
-        this.$refs.leaderboard.change(x => x);
       }
+      this.bomb = false;
+
+      if (!( !this.nextTeam && result == 'correct' )) {
+        this.$refs.leaderboard.next();
+      }
+      this.nextTeam = true;
     },
     newQuestion() {
-      this.result = null;
+      this.questionResult = null;
       this.showQuestion = true;
       if (this.$refs.question)
         this.$refs.question.clear();
@@ -199,7 +205,10 @@ export default {
       this.question =
         this.questions[this.questionNumber % this.questions.length];
       this.questionNumber++;
-    }
+    },
+    goNextTeam() {
+      this.$refs.leaderboard.next();
+    },
   },
   watch: {
     question(newValue, oldValue) {

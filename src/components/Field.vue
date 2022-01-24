@@ -49,17 +49,9 @@ export default {
       const [result, killed] = window.attack(x, y);
       this.field[x][y].status = result;
 
-      if (result == 'miss') {
-        this.$emit('miss');
-      }
+      // result = miss | damage | kill | win | bomb
 
-      if (result == 'bomb') {
-        this.$emit('bomb');
-      }
-
-      if (result != 'miss' && result != 'bomb') {
-        this.$emit('hit');
-      }
+      this.$emit(result);
 
       if (result == 'kill' || result == 'win') {
         for (let [x, y] of killed) {
