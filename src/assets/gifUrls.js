@@ -1,6 +1,8 @@
 export default {
   correct: [
     'static/gif/correct/aaa.gif',
+    'static/gif/correct/dancing_for_smiles.gif',
+    'static/gif/correct/holeyshit.gif',
     'static/gif/correct/khoroshHD.gif',
     'static/gif/correct/MAKSIMAL_NO_KhAROSh.gif',
     'static/gif/correct/Mussolini.gif',

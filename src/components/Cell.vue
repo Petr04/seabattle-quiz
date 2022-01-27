@@ -13,7 +13,7 @@
   padding: 4px;
   margin: var(--spacing);
   font-size: 13px;
-  color: #0003;
+  color: #0005;
   user-select: none;
   cursor: pointer;
 }

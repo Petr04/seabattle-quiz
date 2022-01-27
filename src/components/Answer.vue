@@ -13,7 +13,7 @@
   margin: var(--spacing);
   cursor: pointer;
   border-radius: 3px;
-  color: #0005;
+  color: #0007;
 }
 
 .answer:hover {
@@ -21,7 +21,7 @@
 }
 
 .answer.normal {
-  background: #ddd;
+  background: var(--grey);
 }
 
 .answer.wrong {

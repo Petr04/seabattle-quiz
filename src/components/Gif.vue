@@ -6,7 +6,7 @@
 img {
   display: block;
   max-height: 300px;
-  width: calc(100% - 2 * 15px);
+  max-width: calc(100% - 2 * 15px);
   border-radius: 3px;
 }
 </style>
