@@ -1,24 +1,9 @@
-# seabattle
+# Морской бой
 
-## Project setup
-```
-npm install
-```
+Игра для школьных уроков информатики. Класс делится на команды, каждая из
+которых по очереди делает ход. Если выстрел попадает на корабль или на бомбу,
+команде задаётся вопрос, и она может заработать или потерять балл в зависимости
+от своего ответа. В отличие от обычного морского боя,
+здесь число кораблей больше и они могут касаться друг друга углами.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[Демо](https://pmakarov.codes/seabattle)
